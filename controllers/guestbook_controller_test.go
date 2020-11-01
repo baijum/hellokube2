@@ -15,7 +15,7 @@ import (
 
 var _ = Describe("Guestbook Controller:", func() {
 	const (
-		timeout       = time.Second * 200
+		timeout       = time.Second * 20
 		interval      = time.Millisecond * 250
 		testNamespace = "default"
 	)
@@ -27,11 +27,10 @@ var _ = Describe("Guestbook Controller:", func() {
 
 			backingServiceCRD := &apixv1.CustomResourceDefinition{
 				ObjectMeta: metav1.ObjectMeta{
-					Name:      "backingservices.app.example.org",
-					Namespace: testNamespace,
+					Name: "backingservices.webapp.baiju.dev",
 				},
 				Spec: apixv1.CustomResourceDefinitionSpec{
-					Group: "app.example.org",
+					Group: "webapp.baiju.dev",
 					Versions: []apixv1.CustomResourceDefinitionVersion{{
 						Name:    "v1alpha1",
 						Served:  true,
@@ -60,14 +59,15 @@ var _ = Describe("Guestbook Controller:", func() {
 					},
 					},
 					Names: apixv1.CustomResourceDefinitionNames{
-						Plural: "backingservices",
-						Kind:   "BackingService",
+						Plural:   "backingservices",
+						Singular: "backingservice",
+						Kind:     "BackingService",
 					},
 					Scope: apixv1.ClusterScoped,
 				}}
 			Expect(k8sClient.Create(ctx, backingServiceCRD)).Should(Succeed())
 
-			backingServiceCRDLookupKey := types.NamespacedName{Name: "backingservices.app.example.org", Namespace: testNamespace}
+			backingServiceCRDLookupKey := types.NamespacedName{Name: "backingservices.webapp.baiju.dev", Namespace: testNamespace}
 			createdBackingServiceCRD := &apixv1.CustomResourceDefinition{}
 
 			Eventually(func() bool {
@@ -87,7 +87,7 @@ var _ = Describe("Guestbook Controller:", func() {
 			backingServiceCR := &unstructured.Unstructured{
 				Object: map[string]interface{}{
 					"kind":       "BackingService",
-					"apiVersion": "app.example.org/v1alpha1",
+					"apiVersion": "webapp.baiju.dev/v1alpha1",
 					"metadata": map[string]interface{}{
 						"name": "back1",
 					},
